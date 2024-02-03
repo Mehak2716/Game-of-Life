@@ -3,18 +3,20 @@ package org.example.modals;
 
 public class Cell {
     private Symbol symbol;
+    private Neighbours neighbours;
 
     public Cell(Symbol symbol) {
         this.symbol = symbol;
     }
 
-    public int decision(int aliveNeighbours){
+    public int decision(){
+        int aliveNeighbours= neighbours.countAlive();
         if(symbol==Symbol.X && (aliveNeighbours<2 || aliveNeighbours>3)){
-            symbol = Symbol.O;
+            symbol = Symbol.O; // becomes dead
             return -1;
         }
         if(symbol==Symbol.O && aliveNeighbours==3){
-            symbol = Symbol.X;
+            symbol = Symbol.X; //becomes alive
             return 1;
         }
         return 0;

@@ -61,7 +61,7 @@ public class Board {
         boolean isStateChange = false;
         for(int i=0;i<rows;i++){
             for(int j=0;j<columns;j++){
-                int decision= board[i][j].decision(aliveNeighboursTemp[i][j]);
+                int decision= board[i][j].decision();
                 if(decision!=0) {
                     isStateChange=true;
                     updateNeighbours(i,j,decision);
