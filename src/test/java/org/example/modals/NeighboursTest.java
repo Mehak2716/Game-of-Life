@@ -1,10 +1,10 @@
 package org.example.modals;
 
+import org.example.constants.State;
 import org.example.constants.Symbol;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NeighboursTest {
 
@@ -19,7 +19,8 @@ public class NeighboursTest {
     @Test
     public void TestAddedNeighbourSuccessfully(){
         Neighbours neighbours = new Neighbours();
-        Cell cell = new Cell(Symbol.X);
+        Position cellPosition = new Position(0,0);
+        Cell cell = new Cell(State.Alive,cellPosition);
 
         assertDoesNotThrow(()->{
             neighbours.add(cell);
@@ -27,18 +28,24 @@ public class NeighboursTest {
     }
 
     @Test
-    public void TestCountAliveNeighboursFor0Neighbours(){
+    public void TestCountAliveNeighboursForNoNeighbours_ExpectException(){
         Neighbours neighbours = new Neighbours();
 
-        int count = neighbours.countAlive();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            int count = neighbours.countAlive();
+        });
 
-        assertEquals(count,0);
+        String expectedMessage = "No Neighbour found";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
-    public void TestCountAliveNeighboursFor1AliveNeighbours(){
+    public void TestCountAliveNeighboursFor1AliveNeighbours_Expect1(){
         Neighbours neighbours = new Neighbours();
-        Cell cell = new Cell(Symbol.X);
+        Position cellPosition = new Position(0,0);
+        Cell cell = new Cell(State.Alive,cellPosition);
 
         neighbours.add(cell);
         int count = neighbours.countAlive();
@@ -47,9 +54,10 @@ public class NeighboursTest {
     }
 
     @Test
-    public void TestCountAliveNeighboursFor1DeadNeighbours(){
+    public void TestCountAliveNeighboursFor1DeadNeighbours_Expect0(){
         Neighbours neighbours = new Neighbours();
-        Cell cell = new Cell(Symbol.O);
+        Position cellPosition = new Position(0,0);
+        Cell cell = new Cell(State.Dead,cellPosition);
 
         neighbours.add(cell);
         int count = neighbours.countAlive();
@@ -58,13 +66,33 @@ public class NeighboursTest {
     }
 
     @Test
-    public void TestCountAliveNeighboursFor2AliveNeighbours(){
+    public void TestCountAliveNeighboursFor2AliveNeighbours_Expect2(){
         Neighbours neighbours = new Neighbours();
-        Cell firstCell = new Cell(Symbol.X);
-        Cell secondCell = new Cell(Symbol.X);
+        Position firstCellPosition = new Position(0,0);
+        Position secondCellPosition = new Position(0,1);
+        Cell firstCell = new Cell(State.Alive,firstCellPosition);
+        Cell secondCell = new Cell(State.Alive,secondCellPosition);
 
         neighbours.add(firstCell);
         neighbours.add(secondCell);
+        int count = neighbours.countAlive();
+
+        assertEquals(count,2);
+    }
+
+    @Test
+    public void TestCountAliveNeighboursFor2AliveAnd1DeadNeighbour_Expect2(){
+        Neighbours neighbours = new Neighbours();
+        Position firstCellPosition = new Position(0,0);
+        Position secondCellPosition = new Position(0,1);
+        Position thirdCellPosition = new Position(1,1);
+        Cell firstCell = new Cell(State.Alive,firstCellPosition);
+        Cell secondCell = new Cell(State.Alive,secondCellPosition);
+        Cell thirdCell = new Cell(State.Dead,thirdCellPosition);
+
+        neighbours.add(firstCell);
+        neighbours.add(secondCell);
+        neighbours.add(thirdCell);
         int count = neighbours.countAlive();
 
         assertEquals(count,2);

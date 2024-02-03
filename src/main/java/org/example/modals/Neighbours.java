@@ -3,7 +3,6 @@ package org.example.modals;
 import java.util.ArrayList;
 
 public class Neighbours {
-
     private ArrayList<Cell> neighbours;
 
     public Neighbours(){
@@ -15,6 +14,9 @@ public class Neighbours {
     }
 
     public int countAlive(){
+        if(neighbours.isEmpty())
+            throw new IllegalArgumentException("No Neighbour found");
+
         int aliveCount=0;
         for(Cell cell:neighbours){
             if(cell.isAlive()){
@@ -23,4 +25,17 @@ public class Neighbours {
         }
         return aliveCount;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+
+        if (!(obj instanceof Neighbours))
+            return false;
+
+        Neighbours cellNeighbours = (Neighbours) obj;
+        return this.neighbours.equals(cellNeighbours.neighbours);
+    }
+
 }
