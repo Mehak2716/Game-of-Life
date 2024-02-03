@@ -3,16 +3,19 @@ package org.example.modals;
 import org.example.constants.State;
 import org.example.constants.Symbol;
 
+
 public class Cell {
     private State state;
+    private Position position;
     private Neighbours neighbours;
 
-    public Cell(State state) {
+    public Cell(State state, Position position) {
 
         if(state==State.Stable)
             throw new IllegalArgumentException("Cell can only be initilaized with Alive or Dead state");
 
         this.state = state;
+        this.position = position;
         this.neighbours = new Neighbours();
     }
 
@@ -27,7 +30,11 @@ public class Cell {
     }
 
     public void addNeighbour(Cell cell){
-        neighbours.add(cell);
+        if(position.isValidNeighbourPosition(cell.position)){
+            neighbours.add(cell);
+            return;
+        }
+        throw new IllegalArgumentException("Not a Valid Neighbour");
     }
     public boolean isAlive(){
         return state == State.Alive;
@@ -39,6 +46,18 @@ public class Cell {
     @Override
     public String toString() {
         return (state == State.Alive) ? Symbol.X.toString() : Symbol.O.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this)
+            return true;
+
+        if(!(obj instanceof Cell))
+            return false;
+
+        Cell cell = (Cell) obj;
+        return this.state==cell.state && this.position.equals(cell.position);
     }
 
 }

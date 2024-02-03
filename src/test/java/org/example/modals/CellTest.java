@@ -9,14 +9,17 @@ public class CellTest {
     @Test
     public void TestCellCreatedSuccessfully(){
         assertDoesNotThrow(()->{
-            Cell cell = new Cell(State.Dead);
+            Position position = new Position(0,0);
+            Cell cell = new Cell(State.Dead,position);
         });
     }
 
     @Test
     public void TestCreateCellWithStableState_ExpectException(){
+        Position position = new Position(0,0);
+
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-           Cell cell = new Cell(State.Stable);
+           Cell cell = new Cell(State.Stable,position);
         });
 
         String expectedMessage = "Cell can only be initilaized with Alive or Dead state";
@@ -27,8 +30,10 @@ public class CellTest {
 
     @Test
     public void TestAddedNeighbourSuccessfully(){
-        Cell cell = new Cell(State.Dead);
-        Cell neighbourCell = new Cell(State.Dead);
+        Position cellPosition = new Position(0,0);
+        Position neighbourPosition = new Position(0,1);
+        Cell cell = new Cell(State.Dead,cellPosition);
+        Cell neighbourCell = new Cell(State.Dead,neighbourPosition);
 
         assertDoesNotThrow(()->{
            cell.addNeighbour(neighbourCell);
@@ -36,8 +41,26 @@ public class CellTest {
     }
 
     @Test
+    public void TestAddingNonNeighbour_ExpectException(){
+        Position cellPosition = new Position(0,0);
+        Position neighbourPosition = new Position(0,2);
+        Cell cell = new Cell(State.Dead,cellPosition);
+        Cell neighbourCell = new Cell(State.Dead,neighbourPosition);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            cell.addNeighbour(neighbourCell);
+        });
+
+        String expectedMessage = "Not a Valid Neighbour";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
     public void TestIsCellAliveForAliveCell_ExpectTrue(){
-        Cell cell = new Cell(State.Alive);
+        Position cellPosition = new Position(0,1);
+        Cell cell = new Cell(State.Alive,cellPosition);
 
         boolean isAlive = cell.isAlive();
 
@@ -46,7 +69,8 @@ public class CellTest {
 
     @Test
     public void TestIsCellAliveForDeadCell_ExpectFalse(){
-        Cell cell = new Cell(State.Dead);
+        Position cellPosition = new Position(1,0);
+        Cell cell = new Cell(State.Dead,cellPosition);
 
         boolean isAlive = cell.isAlive();
 
@@ -55,7 +79,8 @@ public class CellTest {
 
     @Test
     public void TestToggleStateForDeadCell_ExpectAliveState(){
-        Cell cell = new Cell(State.Dead);
+        Position cellPosition = new Position(0,2);
+        Cell cell = new Cell(State.Dead,cellPosition);
 
         cell.toggleState();
         boolean isAlive = cell.isAlive();
@@ -65,7 +90,8 @@ public class CellTest {
 
     @Test
     public void TestToggleStateForAliveCell_ExpectDeadState(){
-        Cell cell = new Cell(State.Alive);
+        Position cellPosition = new Position(2,0);
+        Cell cell = new Cell(State.Alive,cellPosition);
 
         cell.toggleState();
         boolean isAlive = cell.isAlive();
@@ -75,7 +101,8 @@ public class CellTest {
 
     @Test
     public void TestCellEvolutionWhenNoNeighbour_ExpectException(){
-        Cell cell = new Cell(State.Dead);
+        Position cellPosition = new Position(0,0);
+        Cell cell = new Cell(State.Dead,cellPosition);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             State evolve = cell.evolve();
@@ -89,8 +116,10 @@ public class CellTest {
 
     @Test
     public void TestDeadCellEvolutionFor1AliveNeighbour_ExpectStableState(){
-        Cell cell = new Cell(State.Dead);
-        Cell neighbour = new Cell(State.Alive);
+        Position cellPosition = new Position(0,0);
+        Position neighbourPosition = new Position(0,1);
+        Cell cell = new Cell(State.Dead,cellPosition);
+        Cell neighbour = new Cell(State.Alive,neighbourPosition);
 
         cell.addNeighbour(neighbour);
         State state = cell.evolve();
@@ -100,8 +129,10 @@ public class CellTest {
 
     @Test
     public void TestDeadCellEvolutionFor1DeadNeighbour_ExpectStableState(){
-        Cell cell = new Cell(State.Dead);
-        Cell neighbour = new Cell(State.Dead);
+        Position cellPosition = new Position(0,2);
+        Position neighbourPosition = new Position(0,3);
+        Cell cell = new Cell(State.Dead,cellPosition);
+        Cell neighbour = new Cell(State.Dead,neighbourPosition);
 
         cell.addNeighbour(neighbour);
         State state = cell.evolve();
@@ -111,8 +142,10 @@ public class CellTest {
 
     @Test
     public void TestAliveCellEvolutionFor1DeadNeighbour_ExpectDeadState(){
-        Cell cell = new Cell(State.Alive);
-        Cell neighbour = new Cell(State.Dead);
+        Position cellPosition = new Position(1,0);
+        Position neighbourPosition = new Position(0,1);
+        Cell cell = new Cell(State.Alive,cellPosition);
+        Cell neighbour = new Cell(State.Dead,neighbourPosition);
 
         cell.addNeighbour(neighbour);
         State state = cell.evolve();
@@ -122,8 +155,10 @@ public class CellTest {
 
     @Test
     public void TestAliveCellEvolutionFor1AliveNeighbour_ExpectDeadState(){
-        Cell cell = new Cell(State.Alive);
-        Cell neighbour = new Cell(State.Alive);
+        Position cellPosition = new Position(0,0);
+        Position neighbourPosition = new Position(1,0);
+        Cell cell = new Cell(State.Alive,cellPosition);
+        Cell neighbour = new Cell(State.Alive,neighbourPosition);
 
         cell.addNeighbour(neighbour);
         State state = cell.evolve();
@@ -133,9 +168,12 @@ public class CellTest {
 
     @Test
     public void TestAliveCellEvolutionFor2AliveNeighbour_ExpectStableState(){
-        Cell cell = new Cell(State.Alive);
-        Cell firstNeighbour = new Cell(State.Alive);
-        Cell secondNeighbour = new Cell(State.Alive);
+        Position cellPosition = new Position(0,0);
+        Position firstNeighbourPosition = new Position(0,1);
+        Position secondNeighbourPosition = new Position(1,0);
+        Cell cell = new Cell(State.Alive,cellPosition);
+        Cell firstNeighbour = new Cell(State.Alive,firstNeighbourPosition);
+        Cell secondNeighbour = new Cell(State.Alive,secondNeighbourPosition);
 
         cell.addNeighbour(firstNeighbour);
         cell.addNeighbour(secondNeighbour);
@@ -146,10 +184,14 @@ public class CellTest {
 
     @Test
     public void TestDeadCellEvolutionFor3AliveNeighbour_ExpectAliveState(){
-        Cell cell = new Cell(State.Dead);
-        Cell firstNeighbour = new Cell(State.Alive);
-        Cell secondNeighbour = new Cell(State.Alive);
-        Cell thirdNeighbour = new Cell(State.Alive);
+        Position cellPosition = new Position(0,0);
+        Position firstNeighbourPosition = new Position(0,1);
+        Position secondNeighbourPosition = new Position(1,0);
+        Position thirdNeighbourPosition = new Position(1,1);
+        Cell cell = new Cell(State.Dead,cellPosition);
+        Cell firstNeighbour = new Cell(State.Alive,firstNeighbourPosition);
+        Cell secondNeighbour = new Cell(State.Alive,secondNeighbourPosition);
+        Cell thirdNeighbour = new Cell(State.Alive,thirdNeighbourPosition);
 
         cell.addNeighbour(firstNeighbour);
         cell.addNeighbour(secondNeighbour);
@@ -161,11 +203,16 @@ public class CellTest {
 
     @Test
     public void TestAliveCellEvolutionFor4AliveNeighbour_ExpectDeadState(){
-        Cell cell = new Cell(State.Alive);
-        Cell firstNeighbour = new Cell(State.Alive);
-        Cell secondNeighbour = new Cell(State.Alive);
-        Cell thirdNeighbour = new Cell(State.Alive);
-        Cell fourthNeighbour = new Cell(State.Alive);
+        Position cellPosition = new Position(1,1);
+        Position firstNeighbourPosition = new Position(0,1);
+        Position secondNeighbourPosition = new Position(1,0);
+        Position thirdNeighbourPosition = new Position(1,2);
+        Position fourthNeighbourPosition = new Position(2,2);
+        Cell cell = new Cell(State.Alive,cellPosition);
+        Cell firstNeighbour = new Cell(State.Alive,firstNeighbourPosition);
+        Cell secondNeighbour = new Cell(State.Alive,secondNeighbourPosition);
+        Cell thirdNeighbour = new Cell(State.Alive,thirdNeighbourPosition);
+        Cell fourthNeighbour = new Cell(State.Alive,fourthNeighbourPosition);
 
         cell.addNeighbour(firstNeighbour);
         cell.addNeighbour(secondNeighbour);
