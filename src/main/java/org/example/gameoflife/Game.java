@@ -23,7 +23,8 @@ public class Game {
         this.rows = rows;
         this.columns = columns;
         this.seedPercent = seedPercent;
-        board = new Board(rows,columns,generateRandomAliveCells());
+        board = new Board(rows,columns);
+        board.initialGeneration(generateRandomAliveCells());
     }
 
     private List<Integer> generateRandomAliveCells(){
@@ -35,21 +36,21 @@ public class Game {
         return indexes;
     }
 
-    public void start(){
-        int generation = 1;
-        while(!board.isAllDead()){
-            System.out.printf("Generation %d : \n",generation);
-            board.show();
-            boolean stateChange=board.move();
-            if(!stateChange)
-                break;
-            generation++;
-        }
-
-        if(!board.isAllDead())
-            System.out.println("This Generation will keep on living");
-        else
-            System.out.println("All Cell dies...Game ends");
-    }
+//    public void start(){
+//        int generation = 1;
+//        while(!board.isAllDead()){
+//            System.out.printf("Generation %d : \n",generation);
+//            board.show();
+//            boolean stateChange=board.move();
+//            if(!stateChange)
+//                break;
+//            generation++;
+//        }
+//
+//        if(!board.isAllDead())
+//            System.out.println("This Generation will keep on living");
+//        else
+//            System.out.println("All Cell dies...Game ends");
+//    }
 
 }

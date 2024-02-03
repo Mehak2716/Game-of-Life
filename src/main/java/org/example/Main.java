@@ -7,7 +7,7 @@ import org.example.gameoflife.Game;
 public class Main {
     public static void main(String[] args) {
         Game game = new Game(3,3,60);
-        game.start();
+//        game.start();
 
     }
 }

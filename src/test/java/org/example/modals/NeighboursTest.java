@@ -1,5 +1,6 @@
 package org.example.modals;
 
+import org.example.constants.Symbol;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
