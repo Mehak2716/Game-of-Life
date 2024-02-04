@@ -10,9 +10,7 @@ import java.util.stream.IntStream;
 public class Game {
 
     private final int rows;
-
     private final int columns;
-
     private final int seedPercent;
     private Board board;
 
@@ -24,7 +22,6 @@ public class Game {
         this.columns = columns;
         this.seedPercent = seedPercent;
         board = new Board(rows,columns);
-        board.initialGeneration(generateRandomAliveCells());
     }
 
     private List<Integer> generateRandomAliveCells(){
@@ -36,21 +33,25 @@ public class Game {
         return indexes;
     }
 
-//    public void start(){
-//        int generation = 1;
-//        while(!board.isAllDead()){
-//            System.out.printf("Generation %d : \n",generation);
-//            board.show();
-//            boolean stateChange=board.move();
-//            if(!stateChange)
-//                break;
-//            generation++;
-//        }
-//
-//        if(!board.isAllDead())
-//            System.out.println("This Generation will keep on living");
-//        else
-//            System.out.println("All Cell dies...Game ends");
-//    }
+    public void start(){
+        try {
+            board.initialGeneration(generateRandomAliveCells());
+            int generation = 1;
+            while (!board.isGenerationEnds()) {
+                System.out.printf("Generation %d : \n", generation);
+                board.display();
+                boolean genChange = board.nextGeneration();
+                if (!genChange){
+                    System.out.println("This Generation will keep on living");
+                    return;
+                }
+                generation++;
+            }
+            System.out.println("All Cell dies...Game ends");
+
+        }catch (Exception e){
+            System.out.println("Initial Generation is all dead");
+        }
+    }
 
 }
