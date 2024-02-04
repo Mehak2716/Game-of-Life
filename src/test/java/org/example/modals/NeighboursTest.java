@@ -1,7 +1,6 @@
 package org.example.modals;
 
 import org.example.constants.State;
-import org.example.constants.Symbol;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,17 +27,12 @@ public class NeighboursTest {
     }
 
     @Test
-    public void TestCountAliveNeighboursForNoNeighbours_ExpectException(){
+    public void TestCountAliveNeighboursForNoNeighbours_Expect0(){
         Neighbours neighbours = new Neighbours();
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            int count = neighbours.countAlive();
-        });
+        int count = neighbours.countAlive();
 
-        String expectedMessage = "No Neighbour found";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
+        assertEquals(count,0);
     }
 
     @Test

@@ -1,7 +1,6 @@
 package org.example.modals;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PositionTest {
@@ -46,7 +45,7 @@ public class PositionTest {
     }
 
     @Test
-    public void TestIsValidNeighbourPositionForDiaganolNeighbour_ExpectFalse(){
+    public void TestIsValidNeighbourPositionForDiagonalNeighbour_ExpectTrue(){
         Position position = new Position(0,0);
         Position neighbourPosition = new Position(1,1);
 

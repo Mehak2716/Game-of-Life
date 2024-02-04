@@ -15,20 +15,6 @@ public class CellTest {
     }
 
     @Test
-    public void TestCreateCellWithStableState_ExpectException(){
-        Position position = new Position(0,0);
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-           Cell cell = new Cell(State.Stable,position);
-        });
-
-        String expectedMessage = "Cell can only be initilaized with Alive or Dead state";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
-    }
-
-    @Test
     public void TestAddedNeighbourSuccessfully(){
         Position cellPosition = new Position(0,0);
         Position neighbourPosition = new Position(0,1);
@@ -100,74 +86,79 @@ public class CellTest {
     }
 
     @Test
-    public void TestCellEvolutionWhenNoNeighbour_ExpectException(){
+    public void TestStateChangeForSingleAliveCellHavingNoNeighbour_ExpectTrue(){
         Position cellPosition = new Position(0,0);
-        Cell cell = new Cell(State.Dead,cellPosition);
+        Cell cell = new Cell(State.Alive,cellPosition);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            State evolve = cell.evolve();
-        });
+        boolean stateChange = cell.isStateChange();
 
-        String expectedMessage = "No Neighbour found";
-        String actualMessage = exception.getMessage();
-
-        assertEquals(expectedMessage, actualMessage);
+        assertTrue(stateChange);
     }
 
     @Test
-    public void TestDeadCellEvolutionFor1AliveNeighbour_ExpectStableState(){
+    public void TestStateChangeForSingleDeadCellHavingNoNeighbour_ExpectFalse(){
+        Position cellPosition = new Position(0,0);
+        Cell cell = new Cell(State.Dead,cellPosition);
+
+        boolean stateChange = cell.isStateChange();
+
+        assertFalse(stateChange);
+    }
+
+    @Test
+    public void TestDeadCellStateChangeFor1AliveNeighbour_ExpectFalse(){
         Position cellPosition = new Position(0,0);
         Position neighbourPosition = new Position(0,1);
         Cell cell = new Cell(State.Dead,cellPosition);
         Cell neighbour = new Cell(State.Alive,neighbourPosition);
 
         cell.addNeighbour(neighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Stable);
+        assertFalse(stateChange);
     }
 
     @Test
-    public void TestDeadCellEvolutionFor1DeadNeighbour_ExpectStableState(){
+    public void TestDeadCellStateChangeFor1DeadNeighbour_ExpectFalse(){
         Position cellPosition = new Position(0,2);
         Position neighbourPosition = new Position(0,3);
         Cell cell = new Cell(State.Dead,cellPosition);
         Cell neighbour = new Cell(State.Dead,neighbourPosition);
 
         cell.addNeighbour(neighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Stable);
+        assertFalse(stateChange);
     }
 
     @Test
-    public void TestAliveCellEvolutionFor1DeadNeighbour_ExpectDeadState(){
+    public void TestAliveCellStateChangeFor1DeadNeighbour_ExpectTrue(){
         Position cellPosition = new Position(1,0);
         Position neighbourPosition = new Position(0,1);
         Cell cell = new Cell(State.Alive,cellPosition);
         Cell neighbour = new Cell(State.Dead,neighbourPosition);
 
         cell.addNeighbour(neighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Dead);
+        assertTrue(stateChange);
     }
 
     @Test
-    public void TestAliveCellEvolutionFor1AliveNeighbour_ExpectDeadState(){
+    public void TestAliveCellStateChangeFor1AliveNeighbour_ExpectTrue(){
         Position cellPosition = new Position(0,0);
         Position neighbourPosition = new Position(1,0);
         Cell cell = new Cell(State.Alive,cellPosition);
         Cell neighbour = new Cell(State.Alive,neighbourPosition);
 
         cell.addNeighbour(neighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Dead);
+        assertTrue(stateChange);
     }
 
     @Test
-    public void TestAliveCellEvolutionFor2AliveNeighbour_ExpectStableState(){
+    public void TestAliveCellStateChangeFor2AliveNeighbour_ExpectFalse(){
         Position cellPosition = new Position(0,0);
         Position firstNeighbourPosition = new Position(0,1);
         Position secondNeighbourPosition = new Position(1,0);
@@ -177,13 +168,13 @@ public class CellTest {
 
         cell.addNeighbour(firstNeighbour);
         cell.addNeighbour(secondNeighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Stable);
+        assertFalse(stateChange);
     }
 
     @Test
-    public void TestDeadCellEvolutionFor3AliveNeighbour_ExpectAliveState(){
+    public void TestDeadCellStateChangeFor3AliveNeighbour_ExpectTrue(){
         Position cellPosition = new Position(0,0);
         Position firstNeighbourPosition = new Position(0,1);
         Position secondNeighbourPosition = new Position(1,0);
@@ -196,13 +187,13 @@ public class CellTest {
         cell.addNeighbour(firstNeighbour);
         cell.addNeighbour(secondNeighbour);
         cell.addNeighbour(thirdNeighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Alive);
+        assertTrue(stateChange);
     }
 
     @Test
-    public void TestAliveCellEvolutionFor4AliveNeighbour_ExpectDeadState(){
+    public void TestAliveCellStateChangeFor4AliveNeighbour_ExpectTrue(){
         Position cellPosition = new Position(1,1);
         Position firstNeighbourPosition = new Position(0,1);
         Position secondNeighbourPosition = new Position(1,0);
@@ -218,8 +209,8 @@ public class CellTest {
         cell.addNeighbour(secondNeighbour);
         cell.addNeighbour(thirdNeighbour);
         cell.addNeighbour(fourthNeighbour);
-        State state = cell.evolve();
+        boolean stateChange = cell.isStateChange();
 
-        assertEquals(state, State.Dead);
+        assertTrue(stateChange);
     }
 }

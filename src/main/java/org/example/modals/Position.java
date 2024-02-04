@@ -22,10 +22,11 @@ public class Position {
         if(obj == this)
             return true;
 
-        if(!(obj instanceof Cell))
+        if(!(obj instanceof Position))
             return false;
 
         Position position = (Position) obj;
         return this.row==position.row && this.column==position.column;
     }
+
 }

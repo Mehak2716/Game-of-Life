@@ -1,7 +1,6 @@
 package org.example.modals;
 
 import org.example.constants.State;
-import org.example.constants.Symbol;
 
 
 public class Cell {
@@ -11,22 +10,15 @@ public class Cell {
 
     public Cell(State state, Position position) {
 
-        if(state==State.Stable)
-            throw new IllegalArgumentException("Cell can only be initilaized with Alive or Dead state");
-
         this.state = state;
         this.position = position;
         this.neighbours = new Neighbours();
     }
 
-    public State evolve() throws IllegalArgumentException{
+    public boolean isStateChange() throws IllegalArgumentException{
         int aliveNeighbours= neighbours.countAlive();
-        if ((isAlive() && (aliveNeighbours < 2 || aliveNeighbours > 3))
-                || (!isAlive() && aliveNeighbours == 3)) {
-            toggleState();
-            return this.state;
-        }
-        return State.Stable;
+        return (isAlive() && (aliveNeighbours < 2 || aliveNeighbours > 3))
+                || (!isAlive() && aliveNeighbours == 3);
     }
 
     public void addNeighbour(Cell cell){
@@ -45,7 +37,7 @@ public class Cell {
     }
     @Override
     public String toString() {
-        return (state == State.Alive) ? Symbol.X.toString() : Symbol.O.toString();
+        return (state == State.Alive) ? "*" : "_";
     }
 
     @Override
