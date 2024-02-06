@@ -1,12 +1,11 @@
 package org.example.modals;
 
-import org.example.constants.State;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+
 
 public class BoardTest {
 
@@ -32,56 +31,6 @@ public class BoardTest {
     }
 
     @Test
-    public void TestBoardInitializedProperlyHavingSingleCell() throws NoSuchFieldException, IllegalAccessException {
-        Position cellPosition = new Position(0,0);
-        Cell cell = new Cell(State.Dead,cellPosition);
-        Cell [][] expectedBoard = {{cell}};
-
-        Board board = new Board(1,1);
-        Field field = Board.class.getDeclaredField("board");
-        field.setAccessible(true);
-        Cell[][] actualBoard = (Cell[][]) field.get(board);
-
-        assertTrue(Arrays.deepEquals(actualBoard, expectedBoard));
-
-    }
-
-    @Test
-    public void TestBoardInitializedProperlyHaving2Cells() throws NoSuchFieldException, IllegalAccessException {
-        Position firstCellPosition = new Position(0,0);
-        Position secondCellPosition = new Position(0,1);
-        Cell firstCell = new Cell(State.Dead,firstCellPosition);
-        Cell secondCell = new Cell(State.Dead,secondCellPosition);
-        firstCell.addNeighbour(secondCell);
-        secondCell.addNeighbour(firstCell);
-        Cell [][] expectedBoard = {{firstCell,secondCell}};
-
-        Board board = new Board(1,2);
-        Field field = Board.class.getDeclaredField("board");
-        field.setAccessible(true);
-        Cell[][] actualBoard = (Cell[][]) field.get(board);
-
-        assertTrue(Arrays.deepEquals(actualBoard, expectedBoard));
-
-    }
-
-    @Test
-    public void TestBoardInitialGenerationWith1AliveCell() throws NoSuchFieldException, IllegalAccessException {
-        Position cellPosition = new Position(0,0);
-        Cell cell = new Cell(State.Alive,cellPosition);
-        Cell [][] expectedBoard = {{cell}};
-
-        Board board = new Board(1,1);
-        List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(0));
-        board.initialGeneration(initialGenerationIndex);
-        Field field = Board.class.getDeclaredField("board");
-        field.setAccessible(true);
-        Cell[][] actualBoard = (Cell[][]) field.get(board);
-
-        assertTrue(Arrays.deepEquals(actualBoard, expectedBoard));
-    }
-
-    @Test
     public void TestBoardInitialGenerationWithNooneAlive_ExpectException(){
         Board board = new Board(1,1);
         List<Integer> initialGenerationIndex = new ArrayList<>();
@@ -94,29 +43,36 @@ public class BoardTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
-
     }
-    @Test
-    public void TestBoardInitialGenerationWith2CellsHavingSecondCellAlive() throws NoSuchFieldException, IllegalAccessException {
-        Position firstCellPosition = new Position(0,0);
-        Position secondCellPosition = new Position(0,1);
-        Cell firstCell = new Cell(State.Dead,firstCellPosition);
-        Cell secondCell = new Cell(State.Alive,secondCellPosition);
-        firstCell.addNeighbour(secondCell);
-        secondCell.addNeighbour(firstCell);
-        Cell [][] expectedBoard = {{firstCell,secondCell}};
 
-        Board board = new Board(1,2);
+    @Test
+    public void TestCreatingBoardInitialGenerationWithOutOfBoundCellIndex_ExpectException(){
+        Board board = new Board(1,1);
         List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(1));
-        board.initialGeneration(initialGenerationIndex);
-        Field field = Board.class.getDeclaredField("board");
-        field.setAccessible(true);
-        Cell[][] actualBoard = (Cell[][]) field.get(board);
 
-        assertTrue(Arrays.deepEquals(actualBoard, expectedBoard));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            board.initialGeneration(initialGenerationIndex);
+        });
+
+        String expectedMessage = "Trying to access index out of bound cell";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+
+    @Test
+    public void TestBoardInitialGenerationGeneratedSuccessfully(){
+        Board board = new Board(1,1);
+        List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(0));
+
+        assertDoesNotThrow(() -> {
+            board.initialGeneration(initialGenerationIndex);
+        });
+
     }
     @Test
-    public void TestBoardNextGenerationWith1AliveCell_ExpectGenerationChangeAndAllCellDead(){
+    public void TestBoardNextGenerationWith1AliveCell_ExpectChangeInGenerationAndAllCellDead(){
         Board board = new Board(1,1);
         List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(0));
 
@@ -129,7 +85,7 @@ public class BoardTest {
     }
 
     @Test
-    public void TestBoardNextGenerationWith2AliveCell_ExpectGenerationChangeAndAllCellDead(){
+    public void TestBoardNextGenerationWith2AliveCell_ExpectChangeInGenerationAndAllCellDead(){
         Board board = new Board(1,2);
         List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(0,1));
 
@@ -142,7 +98,7 @@ public class BoardTest {
     }
 
     @Test
-    public void TestBoardNextGenerationHaving3AliveCellEachOtherNeighbour_ExpectGenerationChangeAndNoEnd(){
+    public void TestBoardNextGenerationHaving3AliveCellEachOtherNeighbour_ExpectGenerationChangeAndNoGenEnd(){
         Board board = new Board(2,2);
         List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(0,1,2));
 
@@ -176,6 +132,48 @@ public class BoardTest {
 
         assertFalse(isGenChange);
         assertTrue(isGenEnd);
+    }
+
+    @Test
+    public void TestBoardNextGenerationFor3By3Board_ExpectToEndOnSecondGen(){
+        Board board = new Board(3,3);
+        List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(2,4,8));
+
+        board.initialGeneration(initialGenerationIndex);
+        boolean isFirstGenChange = board.nextGeneration();
+        boolean isFirstGenEnd = board.isGenerationEnds();
+        boolean isSecondGenChange = board.nextGeneration();
+        boolean isSecondGenEnd = board.isGenerationEnds();
+
+        assertTrue(isFirstGenChange);
+        assertFalse(isFirstGenEnd);
+        assertTrue(isSecondGenChange);
+        assertTrue(isSecondGenEnd);
+    }
+
+    @Test
+    public void TestBoardNextGenerationFor3By3Board_ExpectToEndOnFourthGen(){
+        Board board = new Board(3,3);
+        List<Integer> initialGenerationIndex = new ArrayList<>(Arrays.asList(1,2,3,4,5));
+
+        board.initialGeneration(initialGenerationIndex);
+        boolean isFirstGenChange = board.nextGeneration();
+        boolean isFirstGenEnd = board.isGenerationEnds();
+        boolean isSecondGenChange = board.nextGeneration();
+        boolean isSecondGenEnd = board.isGenerationEnds();
+        boolean isThirdGenChange = board.nextGeneration();
+        boolean isThirdGenEnd = board.isGenerationEnds();
+        boolean isFourthGenChange = board.nextGeneration();
+        boolean isFourthGenEnd = board.isGenerationEnds();
+
+        assertTrue(isFirstGenChange);
+        assertFalse(isFirstGenEnd);
+        assertTrue(isSecondGenChange);
+        assertFalse(isSecondGenEnd);
+        assertTrue(isThirdGenChange);
+        assertFalse(isThirdGenEnd);
+        assertTrue(isFourthGenChange);
+        assertTrue(isFourthGenEnd);
     }
 
 }

@@ -36,7 +36,7 @@ public class Game {
     public void start(){
         try {
             board.initialGeneration(generateRandomAliveCells());
-            int generation = 1;
+            int generation = 0;
             while (!board.isGenerationEnds()) {
                 System.out.printf("Generation %d : \n", generation);
                 board.display();
@@ -47,6 +47,8 @@ public class Game {
                 }
                 generation++;
             }
+            System.out.printf("Generation %d : \n", generation);
+            board.display();
             System.out.println("All Cell dies...Game ends");
 
         }catch (Exception e){
