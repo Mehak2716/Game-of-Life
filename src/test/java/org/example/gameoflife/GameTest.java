@@ -1,19 +1,33 @@
 package org.example.gameoflife;
 
+import org.example.modals.Board;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
 
 public class GameTest {
 
+    @Mock
+    Board mockBoard;
+
+    @InjectMocks
+    Game spyGame;
+
+    @BeforeEach
+    public void init() {
+        spyGame = new Game(2,2,75);
+        MockitoAnnotations.openMocks(this);
+    }
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
     @BeforeEach
@@ -40,6 +54,35 @@ public class GameTest {
         game.start();
 
         assertEquals("Initial Generation is all dead", outputStreamCaptor.toString().trim());
+    }
+
+    @Test
+    public void TestWhenGameStartedInitialGenerationCreatedSuccessfully(){
+        spyGame.start();
+
+        verify(mockBoard,times(1)).initialGeneration(anyList());
+    }
+
+    @Test
+    public void TestGameStopIfGenerationEnd(){
+
+        when(mockBoard.isGenerationEnds()).thenReturn(true);
+        spyGame.start();
+
+        verify(mockBoard,times(0)).nextGeneration();
+        verify(mockBoard,times(1)).isGenerationEnds();
+    }
+
+    @Test
+    public void TestGameStopIfNoChangeInGeneration(){
+
+        when(mockBoard.isGenerationEnds()).thenReturn(false).thenReturn(false);
+        when(mockBoard.nextGeneration()).thenReturn(true).thenReturn(false);
+        spyGame.start();
+
+        verify(mockBoard,times(1)).initialGeneration(anyList());
+        verify(mockBoard,times(2)).nextGeneration();
+        verify(mockBoard,times(2)).isGenerationEnds();
     }
 
     @Test
